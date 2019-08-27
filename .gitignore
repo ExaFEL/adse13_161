@@ -1,0 +1,11 @@
+conda
+cctbx
+*.pyc
+*.egg-info/
+*~
+*.so
+*.xtc
+*.h5
+*.xtc2
+*.err
+*.out
