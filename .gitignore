@@ -1,5 +1,7 @@
 conda
 cctbx
+do_not_delete
+demo
 *.pyc
 *.egg-info/
 *~
