@@ -2,7 +2,7 @@ To install (recommended location is $HOME):
 ./build_from_scratch.sh
 
 Test run interactively on one node:
-bsub -W 1:00 -nnodes 1 -P chm137 -alloc_flags "gpumps" -Is /bin/bash 
+bsub -W 1:00 -nnodes 1 -P chm137 -alloc_flags "gpumps" -Is /bin/bash   
 source env.sh  
 ./clean.sh #clean up result folder  
 jsrun -n1 -a1 -c1 -g1 ./run_demo.sh # use one core and one gpu to generate one pattern  
