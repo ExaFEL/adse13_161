@@ -16,11 +16,17 @@ cat > env.sh <<EOF
 module load gcc/6.4.0
 module load cuda/9.1.85
 
+export PYVER=3.6
+
 # variables needed for conda
 export CONDA_PREFIX=$PWD/conda
-
 export PATH=\$CONDA_PREFIX/bin:\$PATH
 export LD_LIBRARY_PATH=\$CONDA_PREFIX/lib:\$LD_LIBRARY_PATH
+
+# variables needed for psana
+export LCLS2_DIR="$PWD/lcls2"
+export PATH="\$LCLS2_DIR/install/bin:\$PATH"
+export PYTHONPATH="\$LCLS2_DIR/install/lib/python\$PYVER/site-packages:\$PYTHONPATH"
 
 # variables needed for CCTBX
 export CCTBX_PREFIX=$PWD/cctbx
@@ -42,6 +48,7 @@ root_dir=$PWD
 
 # Clean up any previous installs.
 rm -rf conda
+rm -rf lcls2
 rm -rf cctbx
 
 source env.sh
@@ -52,31 +59,36 @@ bash Miniconda3-latest-Linux-ppc64le.sh -b -p $CONDA_PREFIX
 rm Miniconda3-latest-Linux-ppc64le.sh
 source $CONDA_PREFIX/etc/profile.d/conda.sh
 
-conda create -y --name myenv --file dials_env.txt --channel anaconda --channel cctbx --channel conda-forge --channel defaults --channel bioconda --override-channels
-conda activate myenv
-python -m pip install orderedset
-python -m pip install procrunner
-python -m pip install tqdm
+PACKAGE_LIST=(
+    # LCLS2 requirements:
+    python=$PYVER
+    cmake
+    numpy
+    cython
+    matplotlib
+    pytest
+    mongodb
+    pymongo
+    curl
+    rapidjson
+    ipython
+    requests
+    mypy
+)
 
+conda create -y -n myenv "${PACKAGE_LIST[@]}" -c defaults -c anaconda
+conda activate myenv
+conda install -y amityping -c lcls-ii
+conda install -y bitstruct -c conda-forge
 
 # Build mpi4py
 CC=$OMPI_CC MPICC=mpicc pip install -v --no-binary mpi4py mpi4py
 
-# Build CCTBX with LS49
-mkdir $CCTBX_PREFIX
-pushd $CCTBX_PREFIX
-  curl -O https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py
-  chmod +x bootstrap.py
-  ./bootstrap.py hot update --builder=dials --use-conda --python3 --nproc=64
-  pushd $CCTBX_PREFIX/modules
-    git clone https://github.com/nksauter/LS49.git
-  popd
-  mkdir $CCTBX_PREFIX/build
-  pushd $CCTBX_PREFIX/build
-    python $CCTBX_PREFIX/modules/cctbx_project/libtbx/configure.py --enable_openmp_if_possible=True --enable_cuda LS49 prime iota
-    source $CCTBX_PREFIX/build/setpaths.sh
-    make
-  popd
+# Install Psana
+git clone https://github.com/slac-lcls/lcls2.git $LCLS2_DIR
+pushd $LCLS2_DIR
+git checkout e540a92831bf6e991770fd4869ed411183423ae4
+./build_all.sh -d
 popd
 
 echo
