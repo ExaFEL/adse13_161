@@ -74,6 +74,7 @@ PACKAGE_LIST=(
     ipython
     requests
     mypy
+    h5py
 )
 
 conda create -y -n myenv "${PACKAGE_LIST[@]}" -c defaults -c anaconda
