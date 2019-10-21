@@ -2,19 +2,10 @@
 
 set -e
 
-if [[ -z $LS49_BIG_DATA ]]; then
-    echo "Please set LS49_BIG_DATA and run again"
-    exit 1
-fi
-if [[ ! -f $LS49_BIG_DATA/1m2a.pdb ]]; then
-    echo "LS49_BIG_DATA does not contain a file named '1m2a.pdb', are you sure it's pointing to the right place?"
-    exit 1
-fi
-
 # Setup environment.
 cat > env.sh <<EOF
-module load gcc/6.4.0
-module load cuda/9.1.85
+module load gcc/7.4.0
+module load cuda/10.1.168
 
 export PYVER=3.6
 
@@ -30,9 +21,6 @@ export PYTHONPATH="\$LCLS2_DIR/install/lib/python\$PYVER/site-packages:\$PYTHONP
 
 # variables needed for CCTBX
 export CCTBX_PREFIX=$PWD/cctbx
-
-# variables needed for run only
-export LS49_BIG_DATA=$LS49_BIG_DATA
 
 # variables needed to run CCTBX
 if [[ -d \$CONDA_PREFIX ]]; then
@@ -89,7 +77,7 @@ CC=$OMPI_CC MPICC=mpicc pip install -v --no-binary mpi4py mpi4py
 git clone https://github.com/slac-lcls/lcls2.git $LCLS2_DIR
 pushd $LCLS2_DIR
 git checkout e540a92831bf6e991770fd4869ed411183423ae4
-./build_all.sh -d
+CC=/sw/summit/gcc/7.4.0/bin/gcc CXX=/sw/summit/gcc/7.4.0/bin/g++ ./build_all.sh -d
 popd
 
 echo
