@@ -76,7 +76,6 @@ CC=$OMPI_CC MPICC=mpicc pip install -v --no-binary mpi4py mpi4py
 # Install Psana
 git clone https://github.com/slac-lcls/lcls2.git $LCLS2_DIR
 pushd $LCLS2_DIR
-git checkout e540a92831bf6e991770fd4869ed411183423ae4
 CC=/sw/summit/gcc/7.4.0/bin/gcc CXX=/sw/summit/gcc/7.4.0/bin/g++ ./build_all.sh -d
 popd
 
