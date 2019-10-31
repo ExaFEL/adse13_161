@@ -54,7 +54,7 @@ PACKAGE_LIST=(
     numpy
     cython
     matplotlib
-    pytest
+    pytest=4.6
     mongodb
     pymongo
     curl
@@ -63,6 +63,23 @@ PACKAGE_LIST=(
     requests
     mypy
     h5py
+    # extra CCTBX requirements:
+    biopython
+    future
+    ipython
+    jinja2
+    mock
+    msgpack-python
+    pillow
+    psutil
+    pytest-mock
+    pytest-xdist
+    pyyaml
+    reportlab
+    scikit-learn
+    six
+    tabulate
+    tqdm=4.23.4
 )
 
 conda create -y -n myenv "${PACKAGE_LIST[@]}" -c defaults -c anaconda
@@ -78,6 +95,19 @@ git clone https://github.com/slac-lcls/lcls2.git $LCLS2_DIR
 pushd $LCLS2_DIR
 CC=/sw/summit/gcc/7.4.0/bin/gcc CXX=/sw/summit/gcc/7.4.0/bin/g++ ./build_all.sh -d
 popd
+
+# Install CCTBX wtih DIALS (locale needs to be set)
+export LC_ALL=en_US.utf-8
+pip install dials-data
+pip install mrcfile
+pip install orderedset
+pip install procrunner
+mkdir -p $CCTBX_PREFIX
+cd $CCTBX_PREFIX
+wget "https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py"
+# this $CONDA_PREFIX is for the myenv environment, not $PWD/conda
+python bootstrap.py hot update build --builder=dials --use-conda $CONDA_PREFIX --nproc=16
+cd -
 
 echo
 echo "Done. Please run 'source env.sh' to use this build."
