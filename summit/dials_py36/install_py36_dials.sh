@@ -2,6 +2,7 @@
 
 # setup compiler
 module load gcc/7.4.0
+module load cuda/10.1.168
 
 # variables needed for conda
 export CONDA_PREFIX=$PWD/conda
@@ -24,8 +25,11 @@ export LC_ALL=en_US.utf-8
 # get bootstrap.py (currently from "migrate" branch so it's faster)
 wget "https://raw.githubusercontent.com/cctbx/cctbx_project/0c932a51be5a517f58c0ff0fdc6e2300410e7d89/libtbx/auto_build/bootstrap.py"
 
-# download sources
+# download sources and LS49 (will need authentication)
 python bootstrap.py hot update --builder=dials
+cd modules
+git clone git@github.com:nksauter/LS49.git
+cd ..
 
 # install dependencies
 python bootstrap.py base --use-conda ../dials_py36_env.txt
@@ -36,7 +40,10 @@ pip install orderedset
 pip install procrunner
 conda deactivate
 
-# build
-python bootstrap.py build --builder=dials --use-conda --nproc=16
+# build with LS49 (https://github.com/nksauter/LS49)
+python bootstrap.py build --builder=dials --use-conda --nproc=16 --config-flags="--enable_cuda"
+./build/bin/libtbx.configure iota prime LS49 
 
 cd ..
+
+# run tests with ls49_big_data directory set as $LS49_BIG_DATA
