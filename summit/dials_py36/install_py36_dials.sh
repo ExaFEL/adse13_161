@@ -22,13 +22,13 @@ rm -fr *
 # set language to ensure utf-8 encoding
 export LC_ALL=en_US.utf-8
 
-# get bootstrap.py (currently from "migrate" branch so it's faster)
-wget "https://raw.githubusercontent.com/cctbx/cctbx_project/0c932a51be5a517f58c0ff0fdc6e2300410e7d89/libtbx/auto_build/bootstrap.py"
+# get bootstrap.py
+wget "https://raw.githubusercontent.com/cctbx/cctbx_project/master/libtbx/auto_build/bootstrap.py"
 
-# download sources and LS49 (will need authentication)
+# download sources and LS49
 python bootstrap.py hot update --builder=dials
 cd modules
-git clone git@github.com:nksauter/LS49.git
+git clone https://github.com/nksauter/LS49.git
 cd ..
 
 # install dependencies
