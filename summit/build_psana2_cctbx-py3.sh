@@ -11,24 +11,31 @@ export PYVER=3.6
 
 # variables needed for conda
 export CONDA_PREFIX=$PWD/conda
-export PATH=\$CONDA_PREFIX/bin:\$PATH
-export LD_LIBRARY_PATH=\$CONDA_PREFIX/lib:\$LD_LIBRARY_PATH
 
 # variables needed for psana
 export LCLS2_DIR="$PWD/lcls2"
-export PATH="\$LCLS2_DIR/install/bin:\$PATH"
-export PYTHONPATH="\$LCLS2_DIR/install/lib/python\$PYVER/site-packages:\$PYTHONPATH"
 
 # variables needed for CCTBX
 export CCTBX_PREFIX=$PWD/cctbx
 
-# variables needed to run CCTBX
+# variables needed to get the conda env
 if [[ -d \$CONDA_PREFIX ]]; then
-  source \$CONDA_PREFIX/etc/profile.d/conda.sh
-  conda activate myenv
+    source \$CONDA_PREFIX/etc/profile.d/conda.sh
+    # This change $CONDA_PREFIX
+    conda activate myenv
+    export PATH=\$CONDA_PREFIX/bin:\$PATH
+    export LD_LIBRARY_PATH=\$CONDA_PREFIX/lib:\$LD_LIBRARY_PATH
 fi
+
+# variables needed to run psana
+if [[ -e $LCLS2_DIR/setup_env.sh ]]; then
+    export PATH="\$LCLS2_DIR/install/bin:\$PATH"
+    export PYTHONPATH="\$LCLS2_DIR/install/lib/python\$PYVER/site-packages:\$PYTHONPATH"
+fi
+
+# variables needed to run CCTBX
 if [[ -e \$CCTBX_PREFIX/build/setpaths.sh ]]; then
-  source \$CCTBX_PREFIX/build/setpaths.sh
+    source \$CCTBX_PREFIX/build/setpaths.sh
 fi
 EOF
 
