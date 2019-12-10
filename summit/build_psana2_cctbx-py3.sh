@@ -28,7 +28,7 @@ if [[ -d \$CONDA_PREFIX ]]; then
 fi
 
 # variables needed to run psana
-if [[ -e $LCLS2_DIR/setup_env.sh ]]; then
+if [[ -e \$LCLS2_DIR/setup_env.sh ]]; then
     export PATH="\$LCLS2_DIR/install/bin:\$PATH"
     export PYTHONPATH="\$LCLS2_DIR/install/lib/python\$PYVER/site-packages:\$PYTHONPATH"
 fi
